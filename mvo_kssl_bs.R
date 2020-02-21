@@ -61,6 +61,7 @@ argi.hz$pedon_key <- factor(argi.hz$pedon_key)
 mylogit <- glm(meets_thresh ~ ph_h2o + hzn_bot + factor(depthcl), data = argi.hz, family = "binomial")
 summary(mylogit)
 
+png(filename = "foo.png", width = 500 ,height = 500)
 par(mfrow=c(2, 2), oma = c(4, 0, 0, 0), mar=c(4,4,2,2))
 depth.classes <- levels(argi.hz$depthcl)[2:5]
 bdepths <- c(50, 100, 150, 200)
@@ -80,8 +81,8 @@ for(dc in 1:length(depth.classes)) {
   abline(v=0.5, col="RED", lty=2, lwd=3)
   text(xposition[dc], 10, depth.classes[dc], cex=1.2, font=4)
 }
-mtext(paste("Probability of",my.analyte,"greater than",my.threshold,"%\nAll Argillic/Kandic in MLRA",my.mlra,"KSSL DB"), 
-      outer = TRUE, side = 1, line = 2)
+mtext(paste("Probability of",my.analyte,"greater than",my.threshold,"%\nAll Argillic/Kandic in MLRA",my.mlra,"KSSL DB"), outer = TRUE, side = 1, line = 2)
+dev.off()
 
 my.pedons <- fetchNASIS()
 site(my.pedons) <- getSoilDepthClass(my.pedons)

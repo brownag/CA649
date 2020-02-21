@@ -36,11 +36,11 @@ raster.list <- list(
     `NASS Cropland Data Layer (2017)`='L:/NRCS/MLRAShared/Geodata/project_data/NASS/Ver2017_30m_cdls_clip.img'
   ),
   circular=list(
-    `Slope Aspect (degrees)`='L:/NRCS/MLRAShared/Geodata/project_data/MUSum_30m_SSR2/Aspect_30m_SSR2.tif'
+    # `Slope Aspect (degrees)`='L:/NRCS/MLRAShared/Geodata/project_data/MUSum_30m_SSR2/Aspect_30m_SSR2.tif'
   )
 )
 
-pts.per.acre <- 2
+pts.per.acre <- 0.1
 
 # the most important quantiles (percentiles / 100) are: 0.1, 0.5 (median), and 0.9
 # optionally reduce the number of quantiles for narrower tables

@@ -1,0 +1,45 @@
+---
+title: "MU Overlay Exercise"
+author: "Andrew Gene Brown"
+date: "January 29, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, message=F}
+# premap overlays
+library(sp)
+library(rgdal)
+library(aqp)
+library(soilDB)
+
+# load datapoint shapefile (output from dp-NASIS merge)
+ca649_dp <- rgdal::readOGR(dsn = "S:/NRCS/Archive_Andrew_Brown/CA649/Points/updated_ca649_dp.shp") 
+
+ecogroup <- rgdal::readOGR(dsn = "E:/CA649/Premap/ecoboundaries_v1.shp")
+ca649_dp$ecogrp <- over(ca649_dp, ecogroup)$Name
+```
+### Documentation Points per Ecogroup
+```{r, echo=F}
+table(ca649_dp$ecogrp)
+```
+
+### Documentation Point List by Ecogroup
+```{r, echo=F, results='asis'}
+# documentation
+dd <- split(slot(ca649_dp, 'data'), f=ca649_dp$ecogrp)
+for(d in 1:length(dd)) {
+  cat(paste("\n####", names(dd)[d],"\n"))
+  if(nrow(dd[[d]])) {
+    print(knitr::kable(dd[[d]][,c("ident","ecositd","taxonnm","taxnknd")], row.names=F,
+                      caption = "List of supporting documentation, ecosites and taxonnames"))
+    print(knitr::kable(table(data.frame(ecositeid=dd[[d]][,c("ecositd")])), 
+                      caption = "Number of points per ecosite in group",
+                      row.names = F))
+  } else cat("No Data\n")
+  cat("\n---\n")
+}
+```
