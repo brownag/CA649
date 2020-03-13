@@ -1,0 +1,90 @@
+---
+title: "2020-2SON-MLRA-004 - MLRA 18 - CA649 Auburn & Blasingame Mapunits on Metavolcanic Rocks"
+author: "Andrew Gene Brown"
+date: "3/12/2020"
+output: 
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: true
+      smooth_scroll: true
+    toc_depth: 3
+    number_sections: true
+---
+
+# Project Scope and Area Definition {.tabset}
+
+## Project Description
+
+This project will focus on a subset of Auburn and Blasingame map units totaling 112,328 acres in CA649. The primary focus being on the portion found on metavolcanic rocks -- which has been, and continues to be, the central concept of these soils and mapunits. 
+
+The field work that was done in Mariposa County survey (CA649) was completed in the late 1950's and 60's, with the manuscript issued in 1974. As such, much of the field/mapping/correlation work was done before Soil Taxonomy (1975). The pre-Taxonomy mapping concepts were converted to the new system for publication. 
+
+In 2018, the MLRA 18 provisional ecological site correlation effort recognized many areas in LRU XI where soil/site correlations could not be made. CA649, Mariposa County Area, is in the southernmost portion of LRU 18XI and is transitional between the Central and Southern Foothills LRU concepts. 
+
+Over the years some of the series concepts used in this area have changed and new series that are more specific to the MLRA have been developed. It is expected that field data and subsequent analysis will support correlation of some of the modern, existing MLRA 18 series and mapunit concepts that have been developed in adjacent CA630 survey.
+
+The following mapunits were selected as a priority as they do not have a modern ecological site correlated to the major component: 
+
+ * __AhD__ (_Auburn loam, 2 to 15 % slopes_) 
+ 
+ * __AnE__ (_Auburn very rocky loam, 15 to 30 % slopes_)
+ 
+ * __AhE2__ (_Auburn loam, 15 to 30 % slopes, eroded_)
+ 
+ * __AnG2__ (_Auburn very rocky loam, 30 to 75 % slopes, eroded_)
+ 
+ * __BdD__ (_Blasingame loam, 2 to 15 % slopes_) 
+ 
+ * __BdE__ (_Blasingame loam, 15 to 30 % slopes_)
+ 
+ * __BeF__ (_Blasingame rocky loam, 15 to 50 % slopes_) 
+ 
+Areas of map units not listed above may be affected in this update as modern MLRA concepts and technologies are applied to the landscapes. 
+
+## Existing Data
+
+```{r}
+library(aqp)
+library(soilDB)
+
+projects <- list('MLRA 18 - CA649 Auburn & Blasingame 999 Map Units on Volcanic Rocks',
+'MLRA 18 - CA649 Metavolcanic Rockland (PLACEHOLDER)',
+'MLRA 18 - Metavolcanic MLRA Mapunits (PLACEHOLDER)',
+'MLRA 18 - Trabuco TAD2 & TaE2 Mariposa Area (CA649)')
+project <- lapply(projects, function(x) soilDB::fetchNASISWebReport(projectname=x))
+
+spc <- union(lapply(project, function(p) p$spc))
+plegend <- do.call('rbind', lapply(project, function(p) p$mapunit))
+                   
+write.csv(plegend, "project_mapunits.csv")
+
+spc$compnamepct <- paste0(plegend$spc$compname, " (", spc$comppct_r,"%)")
+spc$dmudesc <- factor(spc$dmudesc)
+groupedProfilePlot(spc[grep('649', spc$dmudesc)], groups="dmudesc",
+        id.style="side", label="compnamepct", 
+        max.depth = 150,
+        color='claytotal_r', n.legend = 6)
+```
+
+# Physical Features of Interest
+
+# Data sources, Processing, & Covariates
+
+# Data Exploration
+
+# Landform Analysis
+
+# Sampling for Training Data
+
+# Modelling
+
+# Evaluation
+
+# Data Development
+
+# Results
+
+# References
+
+# Spatial Data
