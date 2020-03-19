@@ -16,13 +16,13 @@ output:
 
 ## Project Description
 
-This project will focus on a subset of Auburn and Blasingame map units totaling 112,328 acres in CA649. The primary focus being on the portion found on metavolcanic rocks -- which has been, and continues to be, the central concept of these soils and mapunits. 
+This project will focus on a subset of Auburn and Blasingame map units totaling 112,328 acres in CA649. The primary focus being on the portion found on metavolcanic rocks -- which has been, and continues to be, the central concept of these soils series and mapunits. 
 
 The field work that was done in Mariposa County survey (CA649) was completed in the late 1950's and 60's, with the manuscript issued in 1974. As such, much of the field/mapping/correlation work was done before Soil Taxonomy (1975). The pre-Taxonomy mapping concepts were converted to the new system for publication. 
 
 In 2018, the MLRA 18 provisional ecological site correlation effort recognized many areas in LRU XI where soil/site correlations could not be made. CA649, Mariposa County Area, is in the southernmost portion of LRU 18XI and is transitional between the Central and Southern Foothills LRU concepts. 
 
-Over the years some of the series concepts used in this area have changed and new series that are more specific to the MLRA have been developed. It is expected that field data and subsequent analysis will support correlation of some of the modern, existing MLRA 18 series and mapunit concepts that have been developed in adjacent CA630 survey.
+Some of the series concepts used in this area have changed and new series that are more specific to the MLRA have been developed. It is expected that field data and subsequent analysis will support correlation of some of the modern, existing MLRA 18 series and mapunit concepts that have been developed in adjacent CA630 survey.
 
 The following mapunits were selected as a priority as they do not have a modern ecological site correlated to the major component: 
 
@@ -38,10 +38,26 @@ The following mapunits were selected as a priority as they do not have a modern 
  
  * __BdE__ (_Blasingame loam, 15 to 30 % slopes_)
  
- * __BeF__ (_Blasingame rocky loam, 15 to 50 % slopes_) 
+ * __BeF__ (_Blasingame rocky loam, 15 to 50 % slopes_)
  
-Areas of map units not listed above may be affected in this update as modern MLRA concepts and technologies are applied to the landscapes. 
+Areas of map units not listed above may be affected in this update as modern MLRA concepts are applied to the landscape.
 
+The following mapunits are conceptually related, occur in adjacent delineations / in similar landscape positions as the above mapunits, and are likely to be impacted by project update work. These mapunits are associated with future projects that have not yet been prioritized. These mapunits also were not correlated to an ecological site in the pESD effort.
+
+ * __TaD2__ (_Trabuco clay loam, 2 to 15 percent slopes, eroded_) - 2031-2SON-MLRA-012
+ 
+ * __TaE2__ (_Trabuco clay loam, 15 to 30 percent slopes, eroded_) - 2031-2SON-MLRA-012
+ 
+ * __RcG__ (_Rock land_) - 2031-2SON-MLRA-610
+ 
+The following mapunits are already correlated provisionally but may have soil conditions more similar to MLRA mapunits addressed in the project than their current assignments.
+
+ * __BkE2__ (_Blasingame-Las Posas stony loams, 9 to 30 percent slopes, eroded_) - currently correlated to F018XI201CA
+ 
+ * __BmG2__ (_Blasingame-Las Posas extremely rocky loams, 30 to 75 percent slopes, eroded_) - currently correlated to R018XI106CA
+ 
+ * __BlF__ (_Blasingame-Las Posas rocky loams 15 to 50 percent slopes_) - currently correlated to R018XC105CA
+ 
 ## Existing Data
 
 ```{r}
@@ -51,7 +67,8 @@ library(soilDB)
 projects <- list('MLRA 18 - CA649 Auburn & Blasingame 999 Map Units on Volcanic Rocks',
 'MLRA 18 - CA649 Metavolcanic Rockland (PLACEHOLDER)',
 'MLRA 18 - Metavolcanic MLRA Mapunits (PLACEHOLDER)',
-'MLRA 18 - Trabuco TAD2 & TaE2 Mariposa Area (CA649)')
+'MLRA 18 - Trabuco TAD2 & TaE2 Mariposa Area (CA649)',
+'MLRA 18 - CA649 Metavolcanic pESD Mapunits (PLACEHOLDER)')
 project <- lapply(projects, function(x) soilDB::fetchNASISWebReport(projectname=x))
 
 spc <- union(lapply(project, function(p) p$spc))
@@ -59,7 +76,7 @@ plegend <- do.call('rbind', lapply(project, function(p) p$mapunit))
                    
 write.csv(plegend, "project_mapunits.csv")
 
-spc$compnamepct <- paste0(plegend$spc$compname, " (", spc$comppct_r,"%)")
+spc$compnamepct <- paste0(spc$compname, " (", spc$comppct_r,"%)")
 spc$dmudesc <- factor(spc$dmudesc)
 groupedProfilePlot(spc[grep('649', spc$dmudesc)], groups="dmudesc",
         id.style="side", label="compnamepct", 
