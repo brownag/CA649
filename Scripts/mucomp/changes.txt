@@ -1,0 +1,18 @@
+2019-08-30 (3.3.8): adding draft categorical definitions for Newhall SMR
+2019-05-15 (3.3.7): fix related to https://github.com/ncss-tech/soilReports/issues/87
+2018-05-29 (3.3.6): density curves are now truncated at min/max values, NASS CDL now included in the default config, adding TODO items for multivariate summary / low-variance warnings
+2018-02-07 (3.3.5): boxplots now use variable width, proportional to sample size; new option in config.R: scaleDensityCurves=TRUE|FALSE
+2018-01-24 (3.3.4): new sanity check for mis-specification of categorical raster in config.R
+2017-12-29 (3.3.3): bug fix for SDJR-style invocation and file name sanity check
+2017-12-29 (3.3.2): bug fix for MUs with zero-variance with respect to categorical variable; added file I/O sanity tests and options for output file naming
+2017-12-19 (3.3.1): writing output files should now fail gracefully, more todo: https://github.com/ncss-tech/soilReports/issues/75
+2017-12-11 (3.3): bug fix for 0-samples returned from invalid geometry (https://github.com/ncss-tech/soilReports/issues/74)
+2017-11-29 (3.2): all columns except mu symbol column are removed from source data in order to prevent name collisions later on (https://github.com/ncss-tech/soilReports/issues/47)
+2017-08-08 (3.1): bug fixes and re-organization of report-specifc documentation
+2017-06-23 (2.6): procedural generation of markdown for arbitrary categoricals; created highly customizable categorical definitions file and moved custom report functions to separate file for upcoming soilReport manifest update
+2017-06-07: (2.5): bug fixes related to specification of a single raster input; dynamic heights for bwplot and density plots
+2017-04-05 (2.3): minor additions, as suggested by folks on 4/13 and 4/14 teleconferences, simple fix for MU specified in config.R and not in MU polys
+2017-04-05 (2.2): new approach for normalization of y-axis of density estimates, addressing (https://github.com/ncss-tech/soilReports/issues/39)
+2017-02-16 (2.1-5): notes and todo items related to NA in samples
+2017-02-15 (2.1-4): small bug fix for checking for aspect / circular raster data; fixed small bug with removal of very small NLCD class proportions
+2017-02-10 (2.1-3): continuous raster data summaries now listed in same order as in config.R

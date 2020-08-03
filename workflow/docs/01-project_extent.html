@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Andrew G. Brown" />
+
+<meta name="date" content="2020-04-29" />
+
+<title>01-project_extent</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">penonblanco</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">01-project_extent</h1>
+<h4 class="author">Andrew G. Brown</h4>
+<h4 class="date">2020-04-29</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2020-08-03
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>workflow/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.1). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20200429code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20200429)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20200429code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20200429)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstronga4dc7f8"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> a4dc7f8 </a>
+</p>
+</div>
+<div id="strongRepositoryversionstronga4dc7f8" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version a4dc7f8. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    DSM/depth_ffs.Rda
+    Ignored:    Ecosites/.Rhistory
+    Ignored:    Ecosites/CA630_ES_dominant_condition.dbf
+    Ignored:    Ecosites/CA630_ES_dominant_condition.prj
+    Ignored:    Ecosites/CA630_ES_dominant_condition.shp
+    Ignored:    Ecosites/CA630_ES_dominant_condition.shx
+    Ignored:    Ecosites/dominant_ecosite_XI.dbf
+    Ignored:    Ecosites/dominant_ecosite_XI.prj
+    Ignored:    Ecosites/dominant_ecosite_XI.shp
+    Ignored:    Ecosites/dominant_ecosite_XI.shx
+    Ignored:    Ecosites/ecoclass_continuousRaster.Rda
+    Ignored:    Ecosites/ecoclass_continuous_rf.Rda
+    Ignored:    Ecosites/ecosite_training_data.Rda
+    Ignored:    Scripts/mucomp/.Rhistory
+    Ignored:    Scripts/mucomp/.Rproj.user/
+    Ignored:    data/
+    Ignored:    workflow/.Rhistory
+    Ignored:    workflow/.Rproj.user/
+    Ignored:    workflow/data/project_mapunits_ssurgo.dbf
+    Ignored:    workflow/data/project_mapunits_ssurgo.prj
+    Ignored:    workflow/data/project_mapunits_ssurgo.shp
+    Ignored:    workflow/data/project_mapunits_ssurgo.shx
+
+Untracked files:
+    Untracked:  .gitignore
+    Untracked:  DSM/ffs_prediction_depth_cm.tif
+    Untracked:  DSM/ffs_prediction_depth_cm.tif.ovr
+    Untracked:  DSM/prediction_musuite.tif
+    Untracked:  DSM/predictions/
+    Untracked:  DSM/predictor_stack_800m.tif
+    Untracked:  DSM/slope_q80_queen_project.tif
+    Untracked:  DSM/slope_q80_queen_project.tif.aux.xml
+    Untracked:  DSM/slope_q80_queen_project.tif.ovr
+    Untracked:  DSM/slope_queen_project.tif
+    Untracked:  DSM/slope_queen_project.tif.aux.xml
+    Untracked:  DSM/slope_queen_project.tif.ovr
+    Untracked:  DSM/slope_rook_project.tif
+    Untracked:  DSM/slope_rook_project.tif.ovr
+    Untracked:  Geodata/
+    Untracked:  History/
+    Untracked:  Literature/
+    Untracked:  Maps/
+    Untracked:  Points/
+    Untracked:  Premap/
+    Untracked:  Projects/2020-2SON-MLRA-004.html
+    Untracked:  Projects/MVO_West/
+    Untracked:  Projects/progress_update_april2020.pptx
+    Untracked:  Projects/project_mapunits.csv
+    Untracked:  Projects/project_mapunits_b.zip
+    Untracked:  workflow/output/
+
+Unstaged changes:
+    Modified:   workflow/analysis/00-get_project.Rmd
+    Modified:   workflow/analysis/01-project_extent.Rmd
+    Modified:   workflow/analysis/05-project_pedons.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>workflow/analysis/01-project_extent.Rmd</code>) and HTML (<code>workflow/docs/01-project_extent.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+a4dc7f8
+</td>
+<td>
+Andrew G. Brown
+</td>
+<td>
+2020-08-03
+</td>
+<td>
+organizing and update
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+a4dc7f8
+</td>
+<td>
+Andrew G. Brown
+</td>
+<td>
+2020-08-03
+</td>
+<td>
+organizing and update
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="project-scope-and-area-definition" class="section level1 tabset">
+<h1>Project Scope and Area Definition</h1>
+<div id="project-description" class="section level2">
+<h2>Project Description</h2>
+<p>This project will focus on a subset of Auburn and Blasingame map units totaling 112,328 acres in CA649. The primary focus being on the portion found on metavolcanic rocks – which has been, and continues to be, the central concept of these soil series (Auburn, Blasingame) and mapunits. The Auburn and Blasingame mapunits used in CA649 generally align to the Bonanza, Jasperpeak, Loafercreek, Gopheridge, Motherlode and Gardellones concepts used in CA630.</p>
+<p>The field work that was done in Mariposa County survey (CA649) was completed in the late 1950’s and 60’s, with the manuscript issued in 1974. As such, much of the field/mapping/correlation work was done before Soil Taxonomy (1975). The pre-Taxonomy mapping concepts were converted to the new system for publication.</p>
+<p>In 2018, the MLRA 18 provisional ecological site correlation effort recognized many areas in LRU XI where soil/site correlations could not be made. CA649, Mariposa County Area, is in the southernmost portion of LRU 18XI and is transitional between the Central and Southern Foothills LRU concepts.</p>
+<p>Some of the series concepts used in this area have changed and new series that are more specific to the MLRA have been developed. It is expected that field data and subsequent analysis will support correlation of some of the modern, existing MLRA 18 series and mapunit concepts that have been developed in adjacent CA630 survey.</p>
+<p>In order to capture this variety of mapunit concepts and keep track of correlation needs, several placeholder projects were created to hold information about these “sets” of related mapunits.</p>
+<div id="mlra-18---ca649-auburn-blasingame-999-map-units-on-volcanic-rocks" class="section level3">
+<h3>MLRA 18 - CA649 Auburn &amp; Blasingame 999 Map Units on Volcanic Rocks</h3>
+<p>The following mapunits were selected as a priority for this project as they do not have a modern ecological site correlated to the major component and cover significant acreage. In aggregate, they conform with the Bonanza-Loafercreek or Jasperpeak-Gopheridge type complexes that are mapped in CA630.</p>
+<ul>
+<li><p><strong>AhD</strong> (<em>Auburn loam, 2 to 15 percent slopes</em>)</p></li>
+<li><p><strong>AnE</strong> (<em>Auburn very rocky loam, 15 to 30 percent slopes</em>)</p></li>
+<li><p><strong>AhE2</strong> (<em>Auburn loam, 15 to 30 percent slopes, eroded</em>)</p></li>
+<li><p><strong>AnG2</strong> (<em>Auburn very rocky loam, 30 to 75 percent slopes, eroded</em>)</p></li>
+<li><p><strong>BdD</strong> (<em>Blasingame loam, 2 to 15 percent slopes</em>)</p></li>
+<li><p><strong>BdE</strong> (<em>Blasingame loam, 15 to 30 percent slopes</em>)</p></li>
+<li><p><strong>BeF</strong> (<em>Blasingame rocky loam, 15 to 50 percent slopes</em>)</p></li>
+</ul>
+</div>
+<div id="related-2-son-projects-and-mapunits" class="section level3">
+<h3>Related 2-SON Projects and Mapunits</h3>
+<p>The following mapunits are conceptually related to the above project, have soil components in common based on preliminary update work, occur in adjacent delineations and in similar landscape positions as the above mapunits, and are likely to be impacted by project update work.</p>
+<div id="mlra-18---trabuco-tad2-tae2-mariposa-area-ca649" class="section level4">
+<h4>MLRA 18 - Trabuco TAD2 &amp; TaE2 Mariposa Area (CA649)</h4>
+<p>The following mapunits were not correlated to an ecological site in the pESD effort. The lower-sloping phase is considered <em>farmland of statewide importance</em>. These mapunits are associated with a future project that has not yet been prioritized, but probably should be as these areas are of significant agronomic importance – and some are wetter than others.</p>
+<ul>
+<li><p><strong>TaD2</strong> (<em>Trabuco clay loam, 2 to 15 percent slopes, eroded</em>) - 2031-2SON-MLRA-012</p></li>
+<li><p><strong>TaE2</strong> (<em>Trabuco clay loam, 15 to 30 percent slopes, eroded</em>) - 2031-2SON-MLRA-012</p></li>
+</ul>
+</div>
+<div id="mlra-18---ca649-metavolcanic-pesd-mapunits-placeholder" class="section level4">
+<h4>MLRA 18 - CA649 Metavolcanic pESD Mapunits (PLACEHOLDER)</h4>
+<p>The following mapunits are already correlated to ecological site concepts (provisionally) but may have soil and ecological site concept conditions more similar to MLRA mapunits used or developed for this project rather than their current assignments.</p>
+<ul>
+<li><p><strong>BkE2</strong> (<em>Blasingame-Las Posas stony loams, 9 to 30 percent slopes, eroded</em>) - currently correlated to F018XI201CA – made additional to X</p></li>
+<li><p><strong>BmG2</strong> (<em>Blasingame-Las Posas extremely rocky loams, 30 to 75 percent slopes, eroded</em>) - currently correlated to R018XI106CA – made additional to Y</p></li>
+<li><p><strong>BlF</strong> (<em>Blasingame-Las Posas rocky loams 15 to 50 percent slopes</em>) - currently correlated to R018XC105CA – largely unaltered by this project, some areas of linework were adjusted</p></li>
+<li><p><strong>TbF2</strong> (<em>Trabuco very rocky clay loam, 15 to 50 percent slopes, eroded</em>) - currently correlated to F018XI205CA – extent significantly reduced and mostly correlated to Z</p></li>
+</ul>
+</div>
+<div id="mlra-18---metavolcanic-mlra-mapunits-placeholder" class="section level4">
+<h4>MLRA 18 - Metavolcanic MLRA Mapunits (PLACEHOLDER)</h4>
+<p>The following mapunits are already on the CA649 legend due to their use in the CA630/CA649 join.</p>
+<ul>
+<li><p><strong>7074</strong> (<em>Loafercreek-Bonanza complex, 3 to 15 percent slopes</em>)</p></li>
+<li><p><strong>7076</strong> (<em>Bonanza-Loafercreek-Gopheridge complex, 15 to 30 percent slopes</em>)</p></li>
+<li><p><strong>7078</strong> (<em>Jasperpeak-Gopheridge complex, 30 to 60 percent slopes</em>)</p></li>
+<li><p><strong>7079</strong> (<em>Gopheridge-Loafercreek complex, 30 to 60 percent slopes</em>)</p></li>
+<li><p><strong>7083</strong> (<em>Aquic Haploxeralfs-Loafercreek-Dunstone complex, 1 to 12 percent slopes</em>)</p></li>
+<li><p><strong>7085</strong> (<em>Bonanza-Loafercreek complex, 3 to 15 percent slopes</em>)</p></li>
+<li><p><strong>7086</strong> (<em>Loafercreek-Gopheridge complex, 15 to 30 percent slopes</em>)</p></li>
+<li><p><strong>7087</strong> (<em>Loafercreek-Gopheridge complex, cool, 15 to 30 percent slopes</em>)</p></li>
+<li><p><strong>7088</strong> (<em>Loafercreek-Gopheridge complex, 30 to 60 percent slopes</em>)</p></li>
+<li><p><strong>7089</strong> (<em>Gardellones-Gopheridge-Motherlode complex, 30 to 60 percent slopes</em>)</p></li>
+</ul>
+</div>
+</div>
+<div id="existing-mapunits" class="section level3">
+<h3>Existing Mapunits</h3>
+<p>Below is series of grouped profile plots showing TUD data, existing MLRA mapunits and new (proposed) MLRA mapunits.</p>
+<pre><code>Reading layer `project_mapunits_ssurgo&#39; from data source `E:\CA649\workflow\data&#39; using driver `ESRI Shapefile&#39;
+Simple feature collection with 2513 features and 5 fields
+geometry type:  POLYGON
+dimension:      XY
+bbox:           xmin: 157608.9 ymin: 4119654 xmax: 243235.7 ymax: 4246709
+epsg (SRID):    32611
+proj4string:    +proj=utm +zone=11 +datum=WGS84 +units=m +no_defs</code></pre>
+<pre><code>Updating layer `project_mapunits_b&#39; to data source `output/project_mapunits_b.shp&#39; using driver `ESRI Shapefile&#39;
+Updating existing layer project_mapunits_b
+Writing 1 features with 0 fields and geometry type Polygon.</code></pre>
+<div id="ca649" class="section level4">
+<h4>CA649</h4>
+<div id="auburn-dominant-mapunits" class="section level5">
+<h5>Auburn-dominant Mapunits</h5>
+<p>The Auburn-dominant mapunits differ primarily in slope phase and rock outcrop percentage. Nominally Auburn does not have / has not been mapped with an argillic horizon. Modern data and descriptions have generally relegated the non-argillic case to more pedogenically “unstable” portions of the landscape.</p>
+<p>AnE and AnG2 are complexes of Auburn and Rock outcrop – the rock outcrop component is portrayed with ‘very rocky’ in name. These mapunits have high RV rock outcrop percentage – much higher than portrayed in most CA630 mapunits – and all CA630 mapunits in these slope classes. A higher [<em>20</em>] value from the range given in the manuscript [<em>10-25%</em>] was selected when the DMU was created, which might not have been the best choice for most delineations, even though it was “conservative.”</p>
+<p>There is a wide range in spatial distribution of rock outcrop with some crests of hills as well as scoured drainageways exceeding 50% cover. However, such areas tend to be small and/or relegated to specific parts of the landscape.</p>
+<p>With adjustment of linework to capture the rockiest/most-contrasting parts of landscape in other mapunits, these rock outcrop percentages will be lowered for more dominant, generally lower-sloping MLRA mapunits.</p>
+<p><img src="figure/01-project_extent.Rmd/unnamed-chunk-3-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+<div id="other-metavolcanic-mapunits-and-miscellaneous-areas" class="section level5">
+<h5>Other metavolcanic mapunits and miscellaneous areas</h5>
+<p>In the Blasingame, Las Posas and Trabuco mapunits, we can see that the <em>fine-loamy</em> series Blasingame has an argillic horizon with RV value <em>claytotal_r</em> between 35 and 40% (36%) clay throughout, and that the Las Posas and Trabuco soils have comparitively higher clay contents (&gt;40%) in the subsoil and are <em>Fine</em> <em>Rhodo-</em> or <em>Haplo-xeralfs</em>, respectively.</p>
+<p><img src="figure/01-project_extent.Rmd/unnamed-chunk-4-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>In contrast, almost all of the CA630 components are <em>fine-loamy</em> and some are <em>skeletal.</em> Whereas, none of the components used in CA649 on metavolcanic rocks are <em>skeletal</em> – and even the <em>fine-loamy</em> soils are <em>fine</em> by modern standard.</p>
+</div>
+</div>
+<div id="existing-mlra-mapunits-ca630" class="section level4">
+<h4>Existing MLRA mapunits (CA630)</h4>
+<p>We can compare these TUD-based components visually to the component data used in the existing MLRA metavolcanic mapunits that are already on the CA649 legend. Due to the large number of unique components, these will be displayed in sets based on depth and rock fragment content in PSCS.</p>
+<div id="shallow-components" class="section level5">
+<h5>Shallow components</h5>
+<p>The shallow components in existing MLRA mapunits reflect difference in depth and cementation class of the weathered bedrock contact. These components are higher in clay content than the Auburn components shown above from the CA649 legend and generally depict a weak to moderate clay <em>increase</em> with depth (argillic horizon / Alfisols); with textures on the light side of clay loam being relatively common.</p>
+<p><img src="figure/01-project_extent.Rmd/unnamed-chunk-5-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>The dominant condition for low elevation, shallow soils on metavolcanic bedrock and slopes &lt;30% is Bonanza, which is a series concept that includes up to 25cm of paralithic materials overlying a lithic contact (within the series control section). Generally, thicker Cr horizons (no Lithic in SCS) are expected to occur on the water collecting portions of the landscape (Dunstone in MUSYM 7083).</p>
+<p>On steeper slopes, often with more rock outcrop, the Jasperpeak components and various deeper soils become more prevalent. The Jasperpeak soils have a weak argillic horizon overlying a lithic contact, so it is comparable to the Auburn except that Jasperpeak is <em>loamy-skeletal</em>.</p>
+</div>
+<div id="deeper-components-non-skeletal" class="section level5">
+<h5>Deeper components, non-skeletal</h5>
+<p>The clay content distribution in the CA649 components contrast with the CA630 mapunits across the county boundary. While heavier clay contents were portrayed in CA630, and are reflected in high end of ranges, the central concept of the CA630 concept soils generally does not include the heaviest clay textures <em>within the particle size control section</em>.</p>
+<p><img src="figure/01-project_extent.Rmd/unnamed-chunk-6-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+<div id="deeper-components-skeletal" class="section level5">
+<h5>Deeper components, skeletal</h5>
+<p>There are other major differences between the CA649 mapunits and CA630 MLRA mapunits. Notably, skeletal components were not recognized in the CA649 mapunits – but the CA630 mapunits have significant amounts of skeletal soils (Gopheridge, Gardellones).</p>
+<p><img src="figure/01-project_extent.Rmd/unnamed-chunk-7-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
+<div id="new-mlra-mapunits-fy2020" class="section level3">
+<h3>New MLRA Mapunits (FY2020)</h3>
+<div id="low-elevation-gopher-ridge-formation" class="section level4">
+<h4>Low Elevation (Gopher Ridge Formation)</h4>
+<div id="shallow-components-1" class="section level5">
+<h5>Shallow components</h5>
+<p>The new low elevation (Gopher Ridge Formation) shallow components are shown here:</p>
+<p><img src="figure/01-project_extent.Rmd/unnamed-chunk-8-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+<div id="deeper-components" class="section level5">
+<h5>Deeper components</h5>
+<p>The new low elevation (Gopher Ridge Formation) deeper components are shown here:</p>
+<p><img src="figure/01-project_extent.Rmd/unnamed-chunk-9-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>TODO</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.6.3 (2020-02-29)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 17763)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United States.1252 
+[2] LC_CTYPE=English_United States.1252   
+[3] LC_MONETARY=English_United States.1252
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] sf_0.8-1     soilDB_2.5.6 aqp_1.22    
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.4.6       RColorBrewer_1.1-2 compiler_3.6.3     later_1.0.0       
+ [5] git2r_0.26.1       plyr_1.8.6         workflowr_1.6.1    class_7.3-15      
+ [9] tools_3.6.3        digest_0.6.25      lifecycle_0.2.0    evaluate_0.14     
+[13] lattice_0.20-38    rlang_0.4.7        DBI_1.1.0          curl_4.3          
+[17] yaml_2.2.1         xfun_0.12          e1071_1.7-3        stringr_1.4.0     
+[21] cluster_2.1.0      knitr_1.28         raster_3.1-5       xml2_1.3.2        
+[25] fs_1.3.1           classInt_0.4-2     rprojroot_1.3-2    grid_3.6.3        
+[29] reshape_0.8.8      glue_1.4.1         data.table_1.12.8  R6_2.4.1          
+[33] rmarkdown_2.3      sp_1.4-2           reshape2_1.4.4     magrittr_1.5      
+[37] whisker_0.4        scales_1.1.0       units_0.6-5        backports_1.1.5   
+[41] promises_1.1.0     codetools_0.2-16   htmltools_0.4.0    colorspace_1.4-1  
+[45] httpuv_1.5.2       KernSmooth_2.23-16 stringi_1.4.6      munsell_0.5.0     </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

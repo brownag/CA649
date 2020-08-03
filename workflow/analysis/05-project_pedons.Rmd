@@ -1,0 +1,183 @@
+---
+title: "05-project_pedons"
+author: "Andrew G. Brown"
+date: "2020-04-30"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Get Pedon Data Within Project Extent
+
+### NASIS Pedons
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# get project pedons
+library(sf)
+library(aqp)
+library(soilDB)
+library(magrittr)
+library(raster)
+
+f <- fetchNASIS()
+f.sub <- aqp::filter(f, !is.na(x_std))
+
+coordinates(f.sub) <- ~ x_std + y_std
+proj4string(f.sub) <- "+proj=longlat +datum=WGS84"
+
+ssurgo.buf <- st_read('output', "project_mapunits_b")
+
+f.sub.sf <- st_as_sf(as(f.sub, 'SpatialPointsDataFrame')) %>%
+  st_transform(st_crs(ssurgo.buf)) %>%
+  st_intersection(ssurgo.buf)
+
+dem <- raster('C:/Geodata/project_data/MUSum_10m_MLRA/DEM_SON_int_AEA.tif')
+prism.map <- raster('C:/Geodata/project_data/MUSum_PRISM/final_MAP_mm_800m.tif')
+prism.maat <- raster('C:/Geodata/project_data/MUSum_PRISM/final_MAAT_800m.tif')
+terrain.slope <- raster("C:/Geodata/project_data/MUSum_10m_MLRA/Slope_SON_int_AEA.tif")
+
+plot(ssurgo.buf$geometry)
+plot(f.sub.sf$geometry, add = T, pch = 19, cex = 0.5)
+
+# table(f.sub.sf$taxonname)
+
+f.prj <- f.sub %>%
+  aqp::filter(peiid %in% f.sub.sf$peiid) #%>%
+  #filter(f.sub.sf, grepl("colluvium|residuum", pmkind)) %>%
+  #filter(f.sub.sf, grepl("metavolcanics|greenstone|metaconglomerate", pmorigin))
+
+f.prj$map <- raster::extract(prism.map, slot(f.prj, 'sp'))
+f.prj$maat <- raster::extract(prism.maat, slot(f.prj, 'sp'))
+f.prj$elev <- raster::extract(dem, slot(f.prj, 'sp'))
+
+# FILTER FOR LOW ELEVATION SET
+#f.prj <- aqp::filter(f.prj, map <= 21*25.4)
+
+f.prj$bedrckdepth <- profileApply(f.prj, estimateSoilDepth, p = "Cr|R|Cd|qm",
+                                  no.contact.depth = 150, no.contact.assigned = Inf)
+
+f.prj$no.contact <- !is.finite(f.prj$bedrckdepth)
+
+plot(density(f.prj$bedrckdepth, na.rm = TRUE, bw = 2.5, from = 0))
+
+# calculate total surface fragments
+# f.prj <- mutate_profile(f.prj, total_surface_frag = (surface_fgravel + 
+#                                                        surface_gravel + 
+#                                                        surface_cobbles + 
+#                                                        surface_stones + 
+#                                                        surface_boulders))
+# plot(density(f.prj$total_surface_frag, na.rm=T, bw=2.5, from = 0))
+
+# mvo peiids
+peiid.prj <- paste0(as.numeric(f.prj$peiid),collapse=",")
+
+# calculate surface horizon
+mineral.soil.surface.to.15cm <- function(p) {
+  m <- getMineralSoilSurfaceDepth(p)
+  return(c(m, m + 15))
+}
+
+# create site-level attributes from thickest mineral horizon in upper 15cm
+f.mvo.surface <- glomApply(f.prj, mineral.soil.surface.to.15cm, modality = 'thickest') %>%   
+  mutate_profile(surface_texture = texture[1], 
+                 surface_clay = clay[1])
+
+# add surface clay back into parent SPC for downstream analysis
+site(f.prj) <- site(f.mvo.surface)[, c(idname(f.mvo.surface), "surface_clay", "surface_texture")]
+
+# inspect proportional breakdown of texture classes 
+table(f.mvo.surface$surface_texture)
+
+# calculate horizons intersecting PSCS
+f.pscs <- glomApply(f.prj, estimatePSCS, truncate=TRUE) 
+
+f.pscs <- f.pscs %>% 
+  mutate_profile(pscs_clay = weighted.mean(clay, hzdepb - hzdept),
+                 pscs_frags = weighted.mean(total_frags_pct, hzdepb - hzdept),
+                 clayrat = pscs_clay / surface_clay,
+                 claymax = max(clay, na.rm = T))
+```
+
+```{r, fig.width=8, fig.height=5, echo=FALSE, warning=FALSE, message=FALSE}
+# make a graph comparing clay contents across depth
+plot(density(f.prj$surface_clay, na.rm=T, bw=1), 
+     main="Clay Content (%)\nSurface v.s. PSCS v.s. Maximum",
+     xlab=paste("Clay %\n", sprintf("(n = %s; bandwidth = 1)", sum(!is.na(f.prj$surface_clay)))),
+     col="blue", xlim=c(0,60), lwd=2)
+
+# add lines and legend
+lines(density(f.pscs$pscs_clay, na.rm = TRUE), col = "green", lwd = 2)
+lines(density(f.pscs$claymax, na.rm = TRUE), col = "red", lwd = 2)
+
+q.x.pos <- quantile(f.pscs$pscs_clay, 
+                    probs = c(0.05,0.5,0.95), 
+                    na.rm = TRUE)
+abline(v = q.x.pos, lty = 2)
+
+text(labels = c("Q5","Q50","Q95"), x = q.x.pos, y = 0.05, pos = 2, srt = 90)
+legend("topright", c("Surface","PSCS","Profile Maximum","PSCS Quantile"), 
+       col = c("blue","green","red","black"), lty = c(1,1,1,2), lwd = c(2,2,2,1))
+
+# merge back into site table
+site(f.prj) <- site(f.pscs)[,c(idname(f.prj),"pscs_clay","pscs_frags")]
+
+linework <- st_read("output/working_progress.shp")
+pedons.sf.utm <- st_transform(st_as_sf(as(f.prj, "SpatialPointsDataFrame")), crs(linework))
+
+misect <- st_intersection(pedons.sf.utm, linework)
+idx <- match(misect$peiid, site(f.prj)$peiid)
+f.prj$musym <- rep(NA, length(f.prj))
+f.prjmusym <- f.prj$musym
+f.prjmusym[idx] <- misect$musym
+f.prj$musym <- f.prjmusym
+
+# write site table to shapefile
+file.remove("output/NASIS_pedons.shp")
+st_write(st_as_sf(as(f.prj, 'SpatialPointsDataFrame')), dsn="output/NASIS_pedons.shp")
+```
+
+```{r}
+f.prj2 <- filter(f.prj, !is.na(musym))
+# generate profile plots
+f.prj2$taxonname <- factor(f.prj2$taxonname)
+groups <- unique(f.prj2$musym)
+
+par(mar = c(0,0,3,0))
+if(!dir.exists("output/profile_plots/"))
+   dir.create("output/profile_plots/", recursive = T)
+
+lapply(as.list(groups), function(g) {
+  png(filename = paste0("output/profile_plots/", g,".png"),
+      width = 1600, height = 800)
+  
+  f.prj2 <- trunc(f.prj2, 0, 200)
+  
+  # extend/truncate all R layers to 200cm
+  r.layers <- grep("R", aqp::hzDesgn(f.prj2))
+  f.prj2@horizons$hzdepb[r.layers] <- 200
+  f.prj2$pedon_id_new <- paste0(f.prj2$pedon_id, 
+                                "                                             ")
+  groupedProfilePlot(filter(f.prj2, musym == g), 
+                     groups = "taxonname", 
+                     print.id = FALSE, cex.names = 0.9,
+                     alt.label = 'pedon_id_new', 
+                     group.name.offset = c(-8,-10))
+  
+  mtext(paste0(g, ""), 3)
+  dev.off()
+  
+  
+  ff.sub <- filter(f.prj2, musym == g, grepl("2019|2020|CA043", pedon_id))
+  
+  if (length(ff.sub)) {
+    png(filename = paste0("output/profile_plots/", g,"_649.png"),
+        width = 1600, height = 800)
+      groupedProfilePlot(ff.sub, groups = "taxonname", alt.label = 'pedon_id_new',
+                       print.id = FALSE, cex.names = 0.9, 
+                       group.name.offset = c(-8,-10))
+      
+      mtext(paste0(g, ""), 3)
+    dev.off()
+  }
+})
+
+```

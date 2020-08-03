@@ -1,0 +1,25 @@
+---
+title: "Home"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+Welcome to my workflow for the MLRA Update Project _2020-2SON-MLRA-004_ "MLRA 18 - CA649 Auburn & Blasingame Mapunits on Metavolcanic Rocks."
+
+ * Get NASIS Project(s): [link](00-get_project.html)
+ 
+ * Project Extent and Scope: [link](01-project_extent.html)
+ 
+ * Get SSURGO/updated linework: [link](02-project_linework.html)
+ 
+ * Get Project Terrain Data: [link](03-project_terrain.html)
+ 
+ * Get Project Spectral Data: [link](04-project_spectral.html)
+ 
+ * Get Project Pedon Data: [link](05-project_pedons.html)
+ 
+ * Analyze Geomorphic Concepts: [link](06-project_geomorph.html)

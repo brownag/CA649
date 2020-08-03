@@ -1,0 +1,291 @@
+---
+title: "01-project_extent"
+author: "Andrew G. Brown"
+date: "2020-04-29"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Project Scope and Area Definition {.tabset}
+
+## Project Description
+
+This project will focus on a subset of Auburn and Blasingame map units totaling 112,328 acres in CA649. The primary focus being on the portion found on metavolcanic rocks -- which has been, and continues to be, the central concept of these soil series (Auburn, Blasingame) and mapunits. The Auburn and Blasingame mapunits used in CA649 generally align to the Bonanza, Jasperpeak, Loafercreek, Gopheridge, Motherlode and Gardellones concepts used in CA630.
+
+The field work that was done in Mariposa County survey (CA649) was completed in the late 1950's and 60's, with the manuscript issued in 1974. As such, much of the field/mapping/correlation work was done before Soil Taxonomy (1975). The pre-Taxonomy mapping concepts were converted to the new system for publication. 
+
+In 2018, the MLRA 18 provisional ecological site correlation effort recognized many areas in LRU XI where soil/site correlations could not be made. CA649, Mariposa County Area, is in the southernmost portion of LRU 18XI and is transitional between the Central and Southern Foothills LRU concepts. 
+
+Some of the series concepts used in this area have changed and new series that are more specific to the MLRA have been developed. It is expected that field data and subsequent analysis will support correlation of some of the modern, existing MLRA 18 series and mapunit concepts that have been developed in adjacent CA630 survey.
+
+In order to capture this variety of mapunit concepts and keep track of correlation needs, several placeholder projects were created to hold information about these "sets" of related mapunits.
+
+### MLRA 18 - CA649 Auburn & Blasingame 999 Map Units on Volcanic Rocks
+
+The following mapunits were selected as a priority for this project as they do not have a modern ecological site correlated to the major component and cover significant acreage. In aggregate, they  conform with the Bonanza-Loafercreek or Jasperpeak-Gopheridge type complexes that are mapped in CA630.
+
+ * __AhD__ (_Auburn loam, 2 to 15 percent slopes_) 
+ 
+ * __AnE__ (_Auburn very rocky loam, 15 to 30 percent slopes_)
+ 
+ * __AhE2__ (_Auburn loam, 15 to 30 percent slopes, eroded_)
+ 
+ * __AnG2__ (_Auburn very rocky loam, 30 to 75 percent slopes, eroded_)
+ 
+ * __BdD__ (_Blasingame loam, 2 to 15 percent slopes_) 
+ 
+ * __BdE__ (_Blasingame loam, 15 to 30 percent slopes_)
+ 
+ * __BeF__ (_Blasingame rocky loam, 15 to 50 percent slopes_)
+ 
+### Related 2-SON Projects and Mapunits
+
+The following mapunits are conceptually related to the above project, have soil components in common based on preliminary update work, occur in adjacent delineations and in similar landscape positions as the above mapunits, and are likely to be impacted by project update work. 
+
+#### MLRA 18 - Trabuco TAD2 & TaE2 Mariposa Area (CA649)
+
+The following mapunits were not correlated to an ecological site in the pESD effort. The lower-sloping phase is considered _farmland of statewide importance_. These mapunits are associated with a future project that has not yet been prioritized, but probably should be as these areas are of significant agronomic importance -- and some are wetter than others.
+
+ * __TaD2__ (_Trabuco clay loam, 2 to 15 percent slopes, eroded_) - 2031-2SON-MLRA-012
+ 
+ * __TaE2__ (_Trabuco clay loam, 15 to 30 percent slopes, eroded_) - 2031-2SON-MLRA-012
+ 
+ 
+#### MLRA 18 - CA649 Metavolcanic pESD Mapunits (PLACEHOLDER)
+
+The following mapunits are already correlated to ecological site concepts (provisionally) but may have soil and ecological site concept conditions more similar to MLRA mapunits used or developed for this project rather than their current assignments.
+
+ * __BkE2__ (_Blasingame-Las Posas stony loams, 9 to 30 percent slopes, eroded_) - currently correlated to F018XI201CA -- made additional to X
+ 
+ * __BmG2__ (_Blasingame-Las Posas extremely rocky loams, 30 to 75 percent slopes, eroded_) - currently correlated to R018XI106CA -- made additional to Y
+ 
+ * __BlF__ (_Blasingame-Las Posas rocky loams 15 to 50 percent slopes_) - currently correlated to R018XC105CA -- largely unaltered by this project, some areas of linework were adjusted
+ 
+ * __TbF2__ (_Trabuco very rocky clay loam, 15 to 50 percent slopes, eroded_) - currently correlated to F018XI205CA -- extent significantly reduced and mostly correlated to Z
+ 
+ 
+#### MLRA 18 - Metavolcanic MLRA Mapunits (PLACEHOLDER)
+
+The following mapunits are already on the CA649 legend due to their use in the CA630/CA649 join.
+
+ * __7074__ (_Loafercreek-Bonanza complex, 3 to 15 percent slopes_) 
+ 
+ * __7076__ (_Bonanza-Loafercreek-Gopheridge complex, 15 to 30 percent slopes_) 
+ 
+ * __7078__ (_Jasperpeak-Gopheridge complex, 30 to 60 percent slopes_) 
+ 
+ * __7079__ (_Gopheridge-Loafercreek complex, 30 to 60 percent slopes_) 
+ 
+ * __7083__ (_Aquic Haploxeralfs-Loafercreek-Dunstone complex, 1 to 12 percent slopes_) 
+ 
+ * __7085__ (_Bonanza-Loafercreek complex, 3 to 15 percent slopes_) 
+ 
+ * __7086__ (_Loafercreek-Gopheridge complex, 15 to 30 percent slopes_) 
+ 
+ * __7087__ (_Loafercreek-Gopheridge complex, cool, 15 to 30 percent slopes_) 
+ 
+ * __7088__ (_Loafercreek-Gopheridge complex, 30 to 60 percent slopes_) 
+ 
+ * __7089__ (_Gardellones-Gopheridge-Motherlode complex, 30 to 60 percent slopes_) 
+
+### Existing Mapunits
+
+Below is series of grouped profile plots showing TUD data, existing MLRA mapunits and new (proposed) MLRA mapunits.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# load required packages
+library(aqp)
+library(soilDB)
+library(sf)
+
+# write legend table to file            
+plegend <- read.csv("output/project_mapunits.csv")
+
+load(file = "output/project.Rda")
+
+# TODO: add argument for "caching" ssurgo data by refresh date
+
+mapunit <- do.call('rbind', lapply(project, function(x) x$mapunit))
+
+# semi-slow but simple way to obtain current SSURGO for project
+if (!file.exists("data/project_mapunits_ssurgo.shp")) {
+  s <- fetchSDA_spatial(mapunit$nationalmusym,
+                   by.col = "nmusym",
+                   add.fields = c('mapunit.musym','mapunit.muname'))
+  
+  ssurgo <- st_transform(sf::st_as_sf(s), "+proj=utm +zone=11 +datum=WGS84")
+  
+  st_write(ssurgo, "data", "project_mapunits_ssurgo", 
+           driver = "ESRI Shapefile", delete_layer = TRUE)
+} else { 
+  # for now just read from file in project directory if you have downloaded before
+  ssurgo <- st_read("data", "project_mapunits_ssurgo")
+}
+
+# create a convex hull around ssurgo extent, write to file
+ssurgo.buf <- ssurgo %>%
+  st_union() %>% 
+  st_convex_hull()
+
+st_write(ssurgo.buf, dsn = "output/project_mapunits_b.shp", update=TRUE)
+```
+
+#### CA649
+
+##### Auburn-dominant Mapunits
+
+The Auburn-dominant mapunits differ primarily in slope phase and rock outcrop percentage. Nominally Auburn does not have / has not been mapped with an argillic horizon. Modern data and descriptions have generally relegated the non-argillic case to more pedogenically "unstable" portions of the landscape.
+
+AnE and AnG2 are complexes of Auburn and Rock outcrop -- the rock outcrop component is portrayed with 'very rocky' in name. These mapunits have high RV rock outcrop percentage -- much higher than portrayed in most CA630 mapunits -- and all CA630 mapunits in these slope classes. A higher [_20_] value from the range given in the manuscript [_10-25%_] was selected when the DMU was created, which might not have been the best choice for most delineations, even though it was "conservative." 
+
+There is a wide range in spatial distribution of rock outcrop with some crests of hills as well as scoured drainageways exceeding 50% cover. However, such areas tend to be small and/or relegated to specific parts of the landscape.
+
+With adjustment of linework to capture the rockiest/most-contrasting parts of landscape in other mapunits, these rock outcrop percentages will be lowered for more dominant, generally lower-sloping MLRA mapunits.
+
+```{r fig.width=15, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
+spc$compnamepct <- paste0(spc$compname, " (", spc$comppct_r,"%)")
+spc$musympct <- paste0(spc$musym, " (", spc$comppct_r,"%)")
+spc$dmudesc <- factor(spc$dmudesc)
+spc$compname <- factor(spc$compname)
+
+# ideas and code from: 
+#  http://ncss-tech.github.io/AQP/aqp/merged-legend-plot.html
+
+# get the full range of clay
+cr <- colorRamp(rev(RColorBrewer::brewer.pal(10, 'Spectral')))
+combined.data <- spc$claytotal_r #c(spc$claytotal_l, spc$claytotal_r, spc$claytotal_h)
+combined.range <- range(combined.data, na.rm = TRUE)
+
+# NA-padded value -> color mapping for full range of some horizon attribute
+mapColor <- function(x, r, col.ramp) {
+  c.rgb <- cr(scales::rescale(x, from=r))
+  cc <- which(complete.cases(c.rgb))
+  cols <- rep(NA, times=nrow(c.rgb))
+  cols[cc] <- rgb(c.rgb[cc, ], maxColorValue=255)
+  return(cols)
+}
+
+# convert non-NA values into colors
+spc$.color <- mapColor(spc$claytotal_r, combined.range, cr)
+
+plot.combined.clay.legend <- function() {
+  # legend is the combined legend
+  mtext(side=3, text='RV Clay Content (%)', font=2, line=1.6)
+  
+  # generate combined range / colors for legend
+  pretty.vals <- pretty(combined.data, n = 8)
+  legend.data <- list(legend=pretty.vals, col=rgb(cr(scales::rescale(pretty.vals)), maxColorValue=255))
+  legend('bottom', legend=legend.data$legend, col=legend.data$col, cex=1.4,
+         bty='n', pch=15, horiz=TRUE, xpd=TRUE, inset=c(0, 0.99))
+}
+
+```
+
+```{r fig.width=15, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
+par(mar=c(1,1,4,1))
+groupedProfilePlot(filter(spc, grepl("649A", dmudesc)), 
+                   groups="compname", id.style="side", label="musympct", max.depth = 150,
+                   cex.names=1, group.name.cex = 1, color='.color', n.legend = 6)
+plot.combined.clay.legend()
+```
+
+##### Other metavolcanic mapunits and miscellaneous areas
+
+In the Blasingame, Las Posas and Trabuco mapunits, we can see that the _fine-loamy_ series Blasingame has an argillic horizon with RV value _claytotal_r_ between 35 and 40% (36%) clay throughout, and that the Las Posas and Trabuco soils have comparitively higher clay contents (>40%) in the subsoil and are _Fine_ _Rhodo-_ or _Haplo-xeralfs_, respectively. 
+
+```{r fig.width=15, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
+par(mar=c(1,1,4,1))
+groupedProfilePlot(filter(spc, grepl("649", dmudesc) & !grepl("649A", dmudesc)), 
+                   groups="compname", id.style="side", label="musympct", max.depth = 150,
+                   cex.names=1, group.name.cex = 1, color='.color', n.legend = 6)
+
+plot.combined.clay.legend()
+```
+
+In contrast, almost all of the CA630 components are _fine-loamy_ and some are _skeletal._ Whereas, none of the components used in CA649 on metavolcanic rocks are _skeletal_ -- and even the _fine-loamy_ soils are _fine_ by modern standard.
+
+#### Existing MLRA mapunits (CA630)
+
+We can compare these TUD-based components visually to the component data used in the existing MLRA metavolcanic mapunits that are already on the CA649 legend. Due to the large number of unique components, these will be displayed in sets based on depth and rock fragment content in PSCS.
+
+##### Shallow components
+
+The shallow components in existing MLRA mapunits reflect difference in depth and cementation class of the weathered bedrock contact. These components are higher in clay content than the Auburn components shown above from the CA649 legend and generally depict a weak to moderate clay _increase_ with depth (argillic horizon / Alfisols); with textures on the light side of clay loam being relatively common.
+
+```{r fig.width=15, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
+par(mar=c(1,1,4,1))
+groupedProfilePlot(filter(spc, grepl("MLRA 18", dmudesc) & 
+                            !grepl("MLRA 18 - Jgo", dmudesc), bedrckdepth <= 50), 
+                   groups="compname", id.style="side", label="musympct", max.depth = 150, cex.names=1,
+                   group.name.cex = 1, color='.color', n.legend = 6)
+
+plot.combined.clay.legend()
+```
+
+The dominant condition for low elevation, shallow soils on metavolcanic bedrock and slopes <30% is Bonanza, which is a series concept that includes up to 25cm of paralithic materials overlying a lithic contact (within the series control section). Generally, thicker Cr horizons (no Lithic in SCS) are expected to occur on the water collecting portions of the landscape (Dunstone in MUSYM 7083).
+
+On steeper slopes, often with more rock outcrop, the Jasperpeak components and various deeper soils become more prevalent. The Jasperpeak soils have a weak argillic horizon overlying a lithic contact, so it is comparable to the Auburn except that Jasperpeak is _loamy-skeletal_. 
+
+##### Deeper components, non-skeletal
+
+The clay content distribution in the CA649 components contrast with the CA630 mapunits across the county boundary. While heavier clay contents were portrayed in CA630, and are reflected in high end of ranges, the central concept of the CA630 concept soils generally does not include the heaviest clay textures _within the particle size control section_. 
+
+```{r fig.width=15, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
+par(mar=c(1,1,4,1))
+groupedProfilePlot(filter(spc, grepl("MLRA 18", dmudesc) & 
+                            !grepl("MLRA 18 - Jgo", dmudesc), bedrckdepth > 50, pscs_frags < 35), 
+                   groups="compname", id.style="side", label="musympct", max.depth = 150, cex.names=1,
+                   group.name.cex = 1, color='.color', n.legend = 6)
+
+plot.combined.clay.legend()
+```
+
+
+##### Deeper components, skeletal
+
+There are other major differences between the CA649 mapunits and CA630 MLRA mapunits. Notably, skeletal components were not recognized in the CA649 mapunits -- but the CA630 mapunits have significant amounts of skeletal soils (Gopheridge, Gardellones).
+
+```{r fig.width=15, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
+par(mar=c(1,1,4,1))
+groupedProfilePlot(filter(spc, grepl("MLRA 18", dmudesc) & 
+                            !grepl("MLRA 18 - Jgo", dmudesc), bedrckdepth > 50, pscs_frags > 35), 
+                   groups="compname", id.style="side", label="musympct", max.depth = 150, cex.names=1,
+                   group.name.cex = 1, color='.color', n.legend = 6)
+
+plot.combined.clay.legend()
+```
+
+### New MLRA Mapunits (FY2020)
+
+#### Low Elevation (Gopher Ridge Formation)
+
+##### Shallow components
+
+The new low elevation (Gopher Ridge Formation) shallow components are shown here:
+
+```{r fig.width=15, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
+par(mar=c(1,1,4,1))
+groupedProfilePlot(filter(spc, grepl("MLRA 18 - Jgo", dmudesc), bedrckdepth <= 50), groups="compname",
+        id.style="side", label="musympct", 
+        max.depth = 150, cex.names=1, group.names.cex=0.9,
+        color='.color', n.legend = 6)
+
+plot.combined.clay.legend()
+```
+
+##### Deeper components
+
+The new low elevation (Gopher Ridge Formation) deeper components are shown here:
+
+```{r fig.width=15, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
+par(mar=c(1,1,4,1))
+groupedProfilePlot(filter(spc, grepl("MLRA 18 - Jgo", dmudesc), bedrckdepth > 50), groups="compname",
+        id.style="side", label="musympct", 
+        max.depth = 150, cex.names=1, group.names.cex=0.9,
+        color='.color', n.legend = 6)
+
+plot.combined.clay.legend()
+```
+
+TODO

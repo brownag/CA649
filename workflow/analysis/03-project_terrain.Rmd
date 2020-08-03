@@ -1,0 +1,48 @@
+---
+title: "03-project_terrain"
+author: "Andrew G. Brown"
+date: "2020-04-30"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Clip Digital Elevation Model (10m) and Annual Beam Radiance (30m) from Regional Datasets
+
+The clipped DEM will be used to generate project-area specific terrain deriviatives using various GIS software (R, SAGA, GRASS). The ABR is difficult to calculate -- so it is easier to pull from the regional dataset. It can/will be resampled to scale of interest --- if, for instance, using it with a stack of 10m terrain derivatives.
+
+```{r}
+# get project terrain data
+library(sf)
+library(aqp)
+library(soilDB)
+library(magrittr)
+library(raster)
+
+b <- st_read("output", "project_mapunits_b")
+
+# these are paths to regional datasets -- could be stored on server etc
+dem <-  raster('C:/Geodata/project_data/MUSum_10m_MLRA/DEM_SON_int_AEA.tif')
+abr <-  raster('C:/Geodata/project_data/ssro2_ann_beam_rad_int.tif')
+
+b <- sf::st_transform(b, st_crs(dem))
+
+dem.c <- crop(dem, b)
+abr.c <- crop(abr, b)
+
+r.b <- fasterize::fasterize(b, dem.c)
+dem.b <- mask(dem.c, r.b)
+plot(dem.b)
+
+r.b <- fasterize::fasterize(b, abr.c)
+abr.b <- mask(abr.c, r.b)
+plot(abr.b)
+
+if(!dir.exists("data/raster"))
+  dir.create("data/raster", recursive = TRUE)
+
+# create rasters that are limted to convex hull bounding project extent
+writeRaster(dem.b, filename = "data/raster/dem_project.tif")
+writeRaster(abr.b, filename = "data/raster/abr_project.tif")
+```
+

@@ -1,0 +1,91 @@
+---
+title: "02-project_linework"
+author: "Andrew G. Brown"
+date: "2020-04-30"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Create shapefile of combined SSURGO+working progress
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# load required packages
+library(aqp)
+library(soilDB)
+library(sf)
+
+project.mapunits <- read.csv("output/project_mapunits.csv", 
+                             stringsAsFactors = FALSE)
+
+# add any non-legend MUSYMs here
+working.musyms <- c(project.mapunits$musym,
+                    '7083','7085','7085b','7074',
+                    '7076','7076b','7086','7087',
+                    '7088b','7078','7079','7079c',
+                    '7088','7089',"TbF2",'7096')
+
+# read from one (or more) geodatabases and combine into single sf geometry called newgdb
+newgdb <- st_read('../Geodata/Offical_Geodatabase/FGCA649_Projects_2020_0323_agb.gdb',
+                  'ca649_a')
+
+ssurgo <- st_read('data', 'project_mapunits_ssurgo')
+ssurgo <- st_transform(ssurgo, st_crs(newgdb))
+
+ca649.mukeys <- project.mapunits$lmapunitiid[project.mapunits$areasymbol == "CA649"]
+ssurgo.no649 <- ssurgo[!ssurgo$mukey %in% ca649.mukeys, 'musym']
+
+ssurgo.no649$orig_musym <- ssurgo.no649$musym
+ssurgo.no649 <- merge(ssurgo.no649, project.mapunits[project.mapunits$areasymbol == "CA630",])
+
+newgdb.pmu <- newgdb[newgdb$MUSYM %in% working.musyms, c('MUSYM', 'orig_musym')]
+names(newgdb.pmu) <- c("musym", "orig_musym", "geometry")
+st_geometry(newgdb.pmu) <- "geometry"
+
+res <- rbind(ssurgo.no649[,names(newgdb.pmu)[1:2]], newgdb.pmu)
+
+plot(ssurgo.no649)
+res2 <- merge(res, project.mapunits[project.mapunits$areasymbol == "CA630",], 
+              all.x = TRUE)
+
+res3 <- st_cast(res2, "POLYGON")
+
+plot(res3$geometry)
+
+st_write(res3, "output/working_progress.shp", 
+         delete_layer = TRUE, update = TRUE)
+```
+
+## Update Impact Calculations
+
+Calculate the area of project mapunits replaced by each MLRA mapunit concept.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+update_impact <- res3
+
+original_ssurgo <- st_read("../Geodata/Offical_Geodatabase/FGCA649_Projects_2019_1125_ra.gdb", 
+                           layer = "ca649_a")
+original_ssurgo_b <- st_read("../Geodata/Offical_Geodatabase/FGCA649_Projects_2019_1125_ra.gdb", 
+                           layer = "ca649_b")
+
+ssurgo_updated <- st_intersection(original_ssurgo, update_impact)
+ssurgo_updated <- filter(ssurgo_updated, st_is(ssurgo_updated$Shape, type = "POLYGON"))
+ssurgo_updated_649 <- st_intersection(ssurgo_updated, original_ssurgo_b)
+
+# remove degenerate features (by product of spatial union of update extent)
+ssurgo_updated_649 <- filter(ssurgo_updated_649, st_is(ssurgo_updated_649$Shape, type = "POLYGON"))
+
+plot(ssurgo_updated_649$Shape, col="BLUE")
+
+res <- ssurgo_updated_649 %>% 
+  group_by(MUSYM) %>% 
+  dplyr::summarize(acreage=units::set_units(sum(st_area(Shape)), acre))
+
+resshow <- as.data.frame(res)[,c("MUSYM","acreage")] 
+resshow <- resshow[order(resshow$acreage, decreasing=TRUE),]
+knitr::kable(resshow)
+
+sum(resshow$acreage)
+```
+

@@ -1,0 +1,66 @@
+---
+title: "06-project_geomorph"
+author: "Andrew G. Brown"
+date: "2020-05-08"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Defining spatial extent of "low foothills"
+
+ - _Low relief_: vertical distance from channel (SAGA GIS; 10m resolution) less than 30m
+ 
+ - _Low gradient_: slope gradient (SAGA GIS; 10m resolution) less than 30%
+ 
+ - _Low precipitation_: 
+ 
+   - 18" is low cutoff for F200 (18 - 25") and midrange for R163 (14 - 22")
+   
+   - 22" is low cutoff for F201 (22 - 31") and high cutoff for R163 (14 - 22")
+   
+   - 25" is high cutoff for F200 (18 - 25")
+ 
+ - _Low tree cover_: low blue oak probability / spectral derivative? Most are NLCD "grassland" areas (TODO)
+
+```{r}
+# SETUP
+slope.threshold        <- 30            # % slope
+vdistchannel.threshold <- 30            # meters
+precip.thresholds      <- c(18, 22, 25) # inches of rain
+```
+
+```{r, echo=FALSE, warning=FALSE}
+library(raster)
+vdistchannel <- raster('E:/CA649/Geodata/derived/vdistchannel.tif')
+slope <- tan(raster('E:/CA649/Geodata/derived/slope.tif'))*100
+
+lowrelief <- (vdistchannel <= vdistchannel.threshold)
+lowgradient <- (slope <= slope.threshold)
+lowhills <- (lowrelief + lowgradient)
+
+plot(lowhills, main="Low Relief + Low Gradient in Project Extent\n(0 = neither; 1 = either; 2 = both)")
+
+writeRaster(lowhills == 2, filename="E:/CA649/Geodata/derived/lowhills.tif", overwrite=T)
+
+precip <- raster("E:/CA649/Geodata/derived/precip_mm.tif")
+
+bound <- rgdal::readOGR("E:/CA649/Geodata/source/CA649_b.shp")
+bound <- spTransform(bound, CRS(proj4string(lowhills)))
+
+for(i in 1:length(precip.thresholds)) {
+  lowprecip <- precip < (precip.thresholds[i] * 25.4)
+  
+  res <- lowprecip + lowhills == 3
+  plot(res, main=paste0("Precip < ",precip.thresholds[i],
+                        "\"; Slope < ",slope.threshold,
+                        "%; Vertical dist. from channel < ",
+                        vdistchannel.threshold,"m"))
+  
+  writeRaster(res, 
+              filename=paste0("E:/CA649/Geodata/derived/lowhills_", precip.thresholds[i], ".tif"),
+              overwrite=TRUE)
+  lines(bound)
+}
+```
+

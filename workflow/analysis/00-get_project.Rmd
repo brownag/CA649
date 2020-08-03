@@ -1,0 +1,89 @@
+---
+title: "00-get_project"
+author: "Andrew G. Brown"
+date: "2020-04-30"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Use fetchNASISWebReport to obtain data for a set of related MLRA projects
+
+```{r}
+# load required packages
+library(aqp)
+library(soilDB)
+library(sf)
+
+projects <- list('MLRA 18 - CA649 Auburn & Blasingame 999 Map Units on Volcanic Rocks',
+  #'MLRA 18 - CA649 Rockland & Miscellaneous Areas (PLACEHOLDER)',
+  'MLRA 18 - Metavolcanic MLRA Mapunits (PLACEHOLDER)',
+  'MLRA 18 - Trabuco TAD2 & TaE2 Mariposa Area (CA649)',
+  'MLRA 18 - CA649 Metavolcanic pESD Mapunits (PLACEHOLDER)')
+
+# query placeholder projects by name
+project <- lapply(projects, function(x) {
+   soilDB::fetchNASISWebReport(projectname=x)
+})
+
+# create a combined SoilProfileCollection with component data
+spc <- union(lapply(project, function(p) p$spc))
+```
+
+Add the legend information to the site table of the profile collection.
+
+```{r}
+# create a combined legend table
+plegend <- unique(do.call('rbind', lapply(project, function(p) p$mapunit)))
+
+# add mapunit level information to SPC
+site(spc) <- unique(plegend[,c('dmuiid','musym','nationalmusym')])
+```
+
+We will also want to know some basic information about the component profiles. So, we calculate bedrock depth and PSCS top and bottom depth. 
+
+```{r}
+hzdesgnname(spc) <- "hzname"
+
+spc$bedrckdepth <- profileApply(spc, estimateSoilDepth, 
+                                p = "Cr|Cd|R|qm", name = hzdesgnname(spc),
+                                top = horizonDepths(spc)[1], 
+                                bottom = horizonDepths(spc)[2])
+
+# estimate PSCS depths
+site(spc) <- profileApply(spc, function(p) {
+  res <- data.frame(coiid = profile_id(p), 
+                    t(estimatePSCS(p, clay.attr = "claytotal_r")))
+  colnames(res) <- c("coiid", "calc_pscs_top", "calc_pscs_bot")
+  return(res)
+}, frameify = TRUE)
+
+f.pscs.interval <- function(p) {
+  foo <- c(p$calc_pscs_top, p$calc_pscs_bot)
+  if(all(foo == 0))
+    return(c(0,1))
+  return(foo)
+}
+
+# calculate PSCS summaries 
+# or any other general types of calculations on base data relevant to project stratification
+pscs <- mutate_profile(glomApply(spc, f.pscs.interval, truncate = TRUE),
+                       pscs_clay = weighted.mean(claytotal_r, 
+                                                 hzdepb_r - hzdept_r, na.rm=TRUE),
+                       pscs_frags = weighted.mean(fragvoltot_r, 
+                                                  hzdepb_r - hzdept_r, na.rm=TRUE),
+                       pscs_claymax = max(claytotal_r, na.rm=TRUE),
+                       pscs_fragmax = max(fragvoltot_r, na.rm=TRUE))
+
+site(spc) <- site(pscs)[, c("coiid","pscs_clay","pscs_frags",
+                            "pscs_claymax","pscs_fragmax")]
+```
+
+```{r}
+# write legend table to file            
+write.csv(plegend, "output/project_mapunits.csv")
+
+# save spc and project object to file for downstream use
+save(spc, project, file = "output/project.Rda")
+```
+
